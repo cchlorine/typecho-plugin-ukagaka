@@ -1,5 +1,5 @@
 <?php
-class Ugauka_Action extends Typecho_Widget implements Widget_Interface_Do
+class Ukagaka_Action extends Typecho_Widget implements Widget_Interface_Do
 {
     public function __construct($request, $response, $params = NULL)
     {
@@ -8,24 +8,24 @@ class Ugauka_Action extends Typecho_Widget implements Widget_Interface_Do
 
     public static function info(){
         $options = Typecho_Widget::widget('Widget_Options');
-        $Ugauka = $options->plugin('Ugauka');
-        $wcc['notice'] = stripslashes($Ugauka->notice);
+        $Ukagaka = $options->plugin('Ukagaka');
+        $wcc['notice'] = stripslashes($Ukagaka->notice);
 
         $db = Typecho_Db::get();
         $select = $db->select()->from('table.options')
-->where('name = ?', 'ugauka_starttime');
+->where('name = ?', 'Ukagaka_starttime');
         $lifetime = $db->fetchAll($select);
         $lifetime = self::get_wcc_lifetime($lifetime[0]['value']);
         $name = Typecho_Widget::widget('Widget_Options')->title;
         $wcc['showlifetime'] = '我已经与主人 '.$name.' 一起生存了 <font color="red">'.$lifetime["day"].'</font> 天 <font color="red">'.$lifetime["hours"].'</font> 小时 <font color="red">'.$lifetime["minutes"].'</font> 分钟 <font color="red">'.$lifetime["seconds"].'</font> 秒的快乐时光啦～*^_^*';
-        $foods = explode("\r\n", $Ugauka->foods);
+        $foods = explode("\r\n", $Ukagaka->foods);
         foreach ($foods as $key => $value) {
             $xx = explode("//", $value);
             $wcc['foods'][] = $xx[0];
             $wcc['eatsay'][] = $xx[1];
         }
-        if($Ugauka->contact){
-            $contact = explode("\r\n", $Ugauka->contact);
+        if($Ukagaka->contact){
+            $contact = explode("\r\n", $Ukagaka->contact);
             foreach ($contact as $key => $value) {
                 $xx = explode("//", $value);
                 $wcc['ques'][] = $xx[0];
