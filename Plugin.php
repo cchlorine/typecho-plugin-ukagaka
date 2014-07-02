@@ -7,7 +7,7 @@
  * @version 1.0.0
  * @link http://kunr.me
  */
-class Ugauka_Plugin implements Typecho_Plugin_Interface
+class Ukagaka_Plugin implements Typecho_Plugin_Interface
 {
     /**
      * 激活插件方法,如果激活失败,直接抛出异常
@@ -18,16 +18,16 @@ class Ugauka_Plugin implements Typecho_Plugin_Interface
      */
     public static function activate()
     {
-        Typecho_Plugin::factory('Widget_Archive')->header = array('Ugauka_Plugin', 'header');
-        Typecho_Plugin::factory('Widget_Archive')->footer = array('Ugauka_Plugin', 'footer');
+        Typecho_Plugin::factory('Widget_Archive')->header = array('Ukagaka_Plugin', 'header');
+        Typecho_Plugin::factory('Widget_Archive')->footer = array('Ukagaka_Plugin', 'footer');
         $db = Typecho_Db::get();
         $db->query($db->insert('table.options')
                 ->rows(array(
-                    'name'  =>  'ugauka_starttime',
+                    'name'  =>  'Ukagaka_starttime',
                     'value' =>  time(),
                     'user'  =>  0
                 )));
-        Helper::addAction('Ugauka', 'Ugauka_Action');
+        Helper::addAction('Ukagaka', 'Ukagaka_Action');
     }
     
     /**
@@ -41,8 +41,8 @@ class Ugauka_Plugin implements Typecho_Plugin_Interface
     public static function deactivate(){
         $db = Typecho_Db::get();
         $db->delete('table.options')
-->where('name = ?', 'ugauka_starttime');
-        Helper::removeAction('Ugauka');
+->where('name = ?', 'Ukagaka_starttime');
+        Helper::removeAction('Ukagaka');
     }
     
     /**
@@ -88,7 +88,7 @@ class Ugauka_Plugin implements Typecho_Plugin_Interface
      */
     public static function header()
     {
-        echo '<link rel="stylesheet" type="text/css" href="'.Helper::options()->pluginUrl.'/Ugauka/assets/ugauka.css" />' . "\n";
+        echo '<link rel="stylesheet" type="text/css" href="'.Helper::options()->pluginUrl.'/Ukagaka/assets/Ukagaka.css" />' . "\n";
     }
 
     /**
@@ -100,9 +100,9 @@ class Ugauka_Plugin implements Typecho_Plugin_Interface
     public static function footer()
     {
         $options = Typecho_Widget::widget('Widget_Options');
-        $Ugauka = $options->plugin('Ugauka');
-        if($Ugauka->selftalk){
-            $selftalk = explode("\r\n", $Ugauka->selftalk);
+        $Ukagaka = $options->plugin('Ukagaka');
+        if($Ukagaka->selftalk){
+            $selftalk = explode("\r\n", $Ukagaka->selftalk);
             $vv = '[';
             foreach ($selftalk as $key => $value) {
                 $vx = explode("//", $value);
@@ -112,10 +112,10 @@ class Ugauka_Plugin implements Typecho_Plugin_Interface
         } else {
             $vv = '\'\'';
         }
-        $path = Helper::options()->pluginUrl.'/Ugauka/assets';
+        $path = Helper::options()->pluginUrl.'/Ukagaka/assets';
         ?><script type="text/javascript">!window.jQuery && document.write('<script src="//upcdn.b0.upaiyun.com/libs/jquery/jquery-1.9.1.min.js"><\/script>');</script>
-        <script src="<?php echo $path;?>/ugauka.js"></script>
-        <script type="text/javascript">var actionurl = '<?php Helper::options()->index('action/Ugauka');?>'; var imagewidth = '85';var imageheight = '152';</script>
+        <script src="<?php echo $path;?>/Ukagaka.js"></script>
+        <script type="text/javascript">var actionurl = '<?php Helper::options()->index('action/Ukagaka');?>'; var imagewidth = '85';var imageheight = '152';</script>
         <script type="text/javascript">createFace("<?php echo $path; ?>/skin/default/face1.gif", "<?php echo $path; ?>/skin/default/face2.gif", "<?php echo $path; ?>/skin/default/face3.gif");</script>
         <script type="text/javascript">var talkself_arr = <?php echo $vv;?>;</script>
         <?php
