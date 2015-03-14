@@ -91,6 +91,7 @@ Ukagaka.prototype = {
   body: document.createElement('div'),
 
   init: function(data) {
+    var self = this;
     for (var d in data) {
       this.data[d] = data[d];
     }
@@ -118,13 +119,26 @@ Ukagaka.prototype = {
                         + '     <a class="ukagaka-btn-menu">| Menu |</a>'
                         + '   </div>'
                         + '</div>';
-    Lutachu('body').appendChild(this.body);
 
+    var shokan = document.createElement('a');
+    shokan.id  = 'ukagaka-shokan';
+    shokan.innerHTML = '召唤!';
+    shokan.onclick = function() {
+      self.show('ukagaka');
+    }
+
+    Lutachu('body').appendChild(this.body);
+    Lutachu('body').appendChild(shokan);
     this.typing =  new Typing({
       source: Lutachu('.ukagaka-chatlog-source'),
       output: Lutachu('.ukagaka-chatlog-output'),
       delay: 20
     });
+
+    // Check
+    if (Lutachu.stor('ukagaka_hide') == 1) {
+      this.hide();
+    }
 
     this.data['hate'] = Lutachu.stor('ukagaka_hate') ? Lutachu.stor('ukagaka_hate') : 0;
     if ((Date.parse(new Date()) - this.data['hate']) > 30 * 100000) {
@@ -147,9 +161,8 @@ Ukagaka.prototype = {
     }
 
     // Set Food
-    this.data['feed_times'] = Lutachu.stor('ugakaka_feed_times') ? Lutachu.stor('ugakaka_feed_times') : 0;
-    this.data['feed_time']  = Lutachu.stor('ugakaka_feed_time') ? Lutachu.stor('ugakaka_feed_time') : 0;
-
+    this.data['feed_times'] = Lutachu.stor('ukagaka_feed_times') ? Lutachu.stor('ukagaka_feed_times') : 0;
+    this.data['feed_time']  = Lutachu.stor('ukagaka_feed_time') ? Lutachu.stor('ukagaka_feed_time') : 0;
 
     // Set Face
     if (this.data['hate'] > 0) {
@@ -177,10 +190,24 @@ Ukagaka.prototype = {
 
 
   show: function(t) {
+    this.face(1);
     Lutachu('.ukagaka-menu,#ukagaka-talk').css('display:none');
     Lutachu('.ukagaka-btn-menu').css('display:block');
 
     switch (t) {
+      case 'ukagaka':
+        if (this.data['hate'] == 0) {
+          Lutachu('#ukagaka').css('display:block');
+          Lutachu('#ukagaka-shokan').css('display:none');
+          this.face(2);
+          var content = ['我回来了~', this.data['nick'] + '想我了么？', '我就知道会再次相遇的。', '相遇是见好事呢！'];
+          this.type(content[Math.ceil(Math.random() * 3)]);
+          Lutachu.stor('ukagaka_hide', 0);
+        } else {
+          return;
+        }
+        break;
+
       case 'notice':
         this.type(this.data['notice']);
         break;
@@ -313,12 +340,30 @@ Ukagaka.prototype = {
       this.type(this.data['food'][1][a]);
     }
 
-    Lutachu.stor('ugakaka_feed_times', this.data['feed_times']);
-    Lutachu.stor('ugakaka_feed_time', this.data['feed_time']);
+    Lutachu.stor('ukagaka_feed_times', this.data['feed_times']);
+    Lutachu.stor('ukagaka_feed_time', this.data['feed_time']);
   },
 
-  hide: function() {
-    console.log('h');
+  hide: function(f) {
+    var self = this;
+    if (f > 0) {
+      Lutachu.stor('ukagaka_hide', 1);
+      Lutachu('#ukagaka').css('display:none');
+      return Lutachu('#ukagaka-shokan').css('display:block');
+    }
+
+    if (this.data['hate'] == 0) {
+      Lutachu('.ukagaka-menu').css('display:none');
+      this.face(3);
+      var content = ['再见~', '要记得再叫我出来呢！', '嗯QAQ，就要分别了么。', '暂时的分开是有意义的！'];
+      this.type(content[Math.ceil(Math.random() * 3)]);
+
+      setTimeout(function(){
+        self.hide(1);
+      }, 500);
+    } else {
+      self.hide(1);
+    }
   },
 
   type: function(v) {

@@ -15,3 +15,4 @@
 .ukagaka-submit, .ukagaka-close { background: transparent; border: 0; outline: none; padding: 0; }
 .ukagaka-submit { padding: 0 8px; }
 .ukagaka-close { position: absolute; right: 0; top: 0; font-size: 20px; margin-top: 3px; margin-right: 6px; }
+#ukagaka-shokan { display: none; position: fixed; top: 0; right: 1%; width: 60px; line-height: 16px; cursor: pointer; border: 1px solid #E87A73; border-top: 0; color: #E87A73;border-radius: 3px; padding: 5px; font-size: 12px; margin-top: -1px; text-align: center; background: #FFF; }
