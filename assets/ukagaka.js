@@ -96,11 +96,30 @@ Ukagaka.prototype = {
     }
 
     this.body.id = 'ukagaka';
-    this.body.innerHTML = '<div class="ukagaka-character"></div><div class="ukagaka-chatlog"><div class="ukagaka-chatlog-source"></div><div class="ukagaka-chatlog-output"></div></div>';
+    this.body.innerHTML = '<div class="ukagaka-character"></div>'
+                        + '<div class="ukagaka-chatlog">'
+                        + '   <div class="ukagaka-chatlog-source">'
+                        + '   </div>'
+                        + '   <div class="ukagaka-chatlog-output">'
+                        + '   </div>'
+                        + '   <div class="ukagaka-menu">'
+                        + '     <a class="ukagaka-menu-notice">显示公告</a>'
+                        + '     <a class="ukagaka-menu-talk">聊&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;天</a>'
+                        + '     <a class="ukagaka-menu-food">吃 零 食</a>'
+                        + '     <a class="ukagaka-menu-lifetime">生存时间</a>'
+                        + '     <a class="ukagaka-menu-close">关闭春菜</a>'
+                        + '   </div>'
+                        + '   <div class="ukagaka-btn">'
+                        + '     <a class="ukagaka-btn-menu">| Menu |</a>'
+                        + '   </div>'
+                        + '</div>';
     Lutachu('body').appendChild(this.body);
 
-    // Set Face
-    Lutachu('.ukagaka-character').css('background-image:url(' + data['character'][0] + ')');
+    this.data['hate'] = Lutachu.stor('ukagaka_hate') ? Lutachu.stor('ukagaka_hate') : 0;
+    if ((Date.parse(new Date()) - this.data['hate']) > 30 * 100000) {
+      this.data['hate'] = 0;
+      Lutachu.stor('ukagaka_hate', 0);
+    }
 
     // Set Height & Width
     Lutachu('#ukagaka, .ukagaka-character').css('width:' + data['width'] + 'px;' + 'height:' + data['height'] + 'px');
@@ -116,6 +135,18 @@ Ukagaka.prototype = {
       this.body.style.top = this.data['position']['y'] + 'px';
     }
 
+    // Set Food
+    this.data['feed_times'] = Lutachu.stor('ugakaka_feed_times') ? Lutachu.stor('ugakaka_feed_times') : 0;
+    this.data['feed_time']  = Lutachu.stor('ugakaka_feed_time') ? Lutachu.stor('ugakaka_feed_time') : 0;
+
+
+    // Set Face
+    if (this.data['hate'] > 0) {
+      this.hate();
+    } else {
+      Lutachu('.ukagaka-character').css('background-image:url(' + data['character'][0] + ')');
+    }
+
     var self = this;
     Lutachu.x(this.data.api, function(data) {
       self.data['born'] = data['born'];
@@ -123,7 +154,9 @@ Ukagaka.prototype = {
       self.data['talk'] = [data['question'], data['answer']];
       self.data['food'] = [data['foods'], data['eatsay']];
 
-      self.show('notice');
+      if (self.data['hate'] == 0) {
+        self.show('notice');
+      }
     });
 
     // Set Event
@@ -132,20 +165,109 @@ Ukagaka.prototype = {
 
 
   show: function(t) {
+    Lutachu('.ukagaka-menu').css('display:none');
+    Lutachu('.ukagaka-btn-menu').css('display:block');
+
     switch (t) {
       case 'notice':
         this.type(this.data['notice']);
         break;
 
       case 'menu':
+        this.type('准备做什么呢？');
+        Lutachu('.ukagaka-menu').css('display:block');
+        Lutachu('.ukagaka-btn-menu').css('display:none');
         break;
 
-      case 'set':
+      case 'food':
+        var self = this,
+            food = [];
+        Lutachu('.ukagaka-chatlog-output').innerHTML = '';
+
+        for (var i in this.data['food'][0]) {
+          var f = this.data['food'][0][i];
+          food[i] = document.createElement('a');
+          food[i].className = 'ukagaka-food'
+          food[i].setAttribute('data-food-id', i);
+          food[i].innerHTML = f;
+          food[i].onclick = function() {
+            self.food(this);
+          };
+          Lutachu('.ukagaka-chatlog-output').appendChild(food[i]);
+        }
+
+        var prefoods = Lutachu('.ukagaka-food');
+        break;
+
+      case 'lifetime':
+        var time1 = new Date(),
+            time2 = new Date(this.data['born'] * 1000),
+            year  = time1.getFullYear() - time2.getFullYear(),
+            month = time1.getMonth()    - time2.getMonth(),
+            day   = time1.getDay()      - time2.getDay(),
+            hours = time1.getHours()    - time2.getHours(),
+            mins  = time1.getMinutes()  - time2.getMinutes(),
+            secs  = time1.getSeconds()  - time2.getSeconds();
+
+        this.type('我已经与主人 主人你好 一起生存了 ' + (year > 0 ? year + '年 ' : '') + (month > 0 ? month + '月 ' : '') + (day > 0 ? day + '天 ' : '') + (hours > 0 ? hours + '小时 ' : '') + (mins > 0 ? mins + '分钟 ' : '') + (secs > 0 ? secs + '秒 ' : '') + '的快乐时光啦～*^_^*');
+        console.log(mins)
         break;
 
       case 'talk':
         break;
     }
+  },
+
+  hate: function() {
+    Lutachu('.ukagaka-btn-menu').css('display:none');
+    this.type('最讨厌你了！我不认识你！奏凯！');
+    this.face(3);
+    this.hide();
+
+    var t = Date.parse(new Date());
+    this.data['hate'] = t;
+    Lutachu.stor('ukagaka_hate', t);
+  },
+
+  face: function(n) {
+    Lutachu('.ukagaka-character').css('background-image:url(' + this.data['character'][(n - 1)] + ')');
+  },
+
+  food: function(v) {
+    var a = v.getAttribute('data-food-id');
+    var n = Date.parse(new Date());
+
+    if (this.data['feed_times'] > 0) {
+      if ((n - this.data['feed_time']) > 30 * 100000) {
+        this.data['feed_times'] = 0;
+      } else if ((n - this.data['feed_time']) > 15 * 100000) {
+        this.data['feed_times'] = this.data['feed_times'] - Math.round(this.data['feed_times'] / 2);
+      } else {
+        this.data['feed_times']++;
+      }
+    } else {
+      this.data['feed_times'] = 1;
+    }
+
+    this.data['feed_time']  = n;
+
+    if (this.data['feed_times'] >= 5 && this.data['feed_times'] < 8) {
+      this.type('好饱啊，快吃不下了。');
+    } else if (this.data['feed_times'] >= 8 && this.data['feed_times'] < 10) {
+      this.type('吃不下了，不要给我吃了啦！');
+    } else if (this.data['feed_times'] >= 10) {
+      this.type('最讨厌你了！');
+      return this.hate();
+    } else {
+      this.type(this.data['food'][1][a]);
+    }
+
+    Lutachu.stor('ugakaka_feed_times', this.data['feed_times']);
+    Lutachu.stor('ugakaka_feed_time', this.data['feed_time']);
+  },
+
+  hide: function() {
+    //
   },
 
   type: function(v) {
@@ -162,8 +284,9 @@ Ukagaka.prototype = {
   },
 
   event: function() {
-    var body = this.body;
-    var moveX, moveY, moveTop, moveLeft, moveable;
+    var self = this,
+        body = this.body,
+        moveX, moveY, moveTop, moveLeft, moveable;
 
     body.onmousedown = function() {
       moveable = true;
@@ -194,6 +317,30 @@ Ukagaka.prototype = {
           moveX = moveY = moveTop = moveLeft = 0;
         }
       }
+    };
+
+    Lutachu('.ukagaka-btn-menu').onclick = function() {
+      self.show('menu');
+    };
+
+    Lutachu('.ukagaka-menu-notice').onclick = function() {
+      self.show('notice');
+    };
+
+    Lutachu('.ukagaka-menu-talk').onclick = function() {
+      self.show('talk');
+    };
+
+    Lutachu('.ukagaka-menu-food').onclick = function() {
+      self.show('food');
+    };
+
+    Lutachu('.ukagaka-menu-lifetime').onclick = function() {
+      self.show('lifetime');
+    };
+
+    Lutachu('.ukagaka-menu-close').onclick = function() {
+      self.hide();
     };
   }
 };
@@ -227,7 +374,7 @@ smjq(document).ready(function(){
   var docMouseMoveEvent = document.onmousemove;
   var docMouseUpEvent = document.onmouseup;
 
-  smjq("body").append('<div id="smchuncai" onfocus="this.blur();" style="color:#626262;z-index:999;"><div id="chuncaiface"></div><div id="dialog_chat"><div id="chat_top"></div><div id="dialog_chat_contents"><div id="dialog_chat_loading"></div><div id="tempsaying"></div><div id="showchuncaimenu"><ul class="wcc_mlist" id="shownotice">显示公告</ul><ul class="wcc_mlist" id="chatTochuncai">聊&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;天</ul><ul class="wcc_mlist" id="foods">吃 零 食</ul><ul class="wcc_mlist" id="lifetimechuncai">生存时间</ul><ul class="wcc_mlist" id="closechuncai">关闭春菜</ul></div><div><ul id="chuncaisaying"></ul></div><div id="getmenu"> </div></div><div id="chat_bottom"></div></div></div>');
+  smjq("body").append('<div id="smchuncai" onfocus="this.blur();" style="color:#626262;z-index:999;"><div id="chuncaiface"></div><div id="dialog_chat"><div id="chat_top"></div><div id="dialog_chat_contents"><div id="dialog_chat_loading"></div><div id="tempsaying"></div><div id="showchuncaimenu"><ul id="shownotice">显示公告</ul><ul id="chatTochuncai">聊&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;天</ul><ul id="foods">吃 零 食</ul><ul id="lifetimechuncai">生存时间</ul><ul id="closechuncai">关闭春菜</ul></div><div><ul id="chuncaisaying"></ul></div><div id="getmenu"> </div></div><div id="chat_bottom"></div></div></div>');
   smjq("#smchuncai").append('<div id="addinput"><div id="inp_l"><input id="talk" type="text" name="mastersay" onkeydown="if(event.keyCode==13){submitTalk(this);}" value="" /> <input id="talkto" type="button" value=" " /></div><div id="inp_r"> X </div></div>');
   smjq("body").append('<div id="callchuncai">召唤春菜</div>');
   //判断春菜是否处于隐藏状态
