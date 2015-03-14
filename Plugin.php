@@ -101,17 +101,6 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
   {
     $options = Typecho_Widget::widget('Widget_Options');
     $Ukagaka = $options->plugin('Ukagaka');
-    if($Ukagaka->selftalk) {
-      $selftalk = explode("\r\n", $Ukagaka->selftalk);
-      $vx = array();
-      foreach ($selftalk as $key => $value) {
-        $vx[] = explode("//", $value);
-      }
-
-      $vv = json_encode($vx);
-    } else {
-      $vv = '[]';
-    }
 
     $path = Helper::options()->pluginUrl.'/Ukagaka/assets';
     ?> <script src="<?php echo $path;?>/ukagaka.js"></script>
@@ -120,15 +109,12 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
         width: '85',
         height: '152',
 
-        base: '<?php echo Helper::options()->pluginUrl . '/Ukagaka'; ?>',
         api: '<?php Helper::options()->index('action/Ukagaka'); ?>',
         character: [
           '<?php echo $path; ?>/skin/default/face1.gif',
           '<?php echo $path; ?>/skin/default/face2.gif',
           '<?php echo $path; ?>/skin/default/face3.gif'
         ],
-
-        talk: <?php echo $vv;?>
       });
     </script>
     <?php

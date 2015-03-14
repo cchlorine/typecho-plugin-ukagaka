@@ -40,6 +40,15 @@ class Ukagaka_Action extends Typecho_Widget implements Widget_Interface_Do
       }
     }
 
+    if ($Ukagaka->selftalk) {
+      $selftalk = explode("\r\n", $Ukagaka->selftalk);
+      foreach ($selftalk as $key => $value) {
+        $ki['talk'][] = explode("//", $value);
+      }
+    } else {
+      $ki['talk'] = '';
+    }
+
     $ki = json_encode($ki);
     echo $ki;
   }
