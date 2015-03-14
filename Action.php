@@ -12,15 +12,15 @@ class Ukagaka_Action extends Typecho_Widget implements Widget_Interface_Do
     $options  = Typecho_Widget::widget('Widget_Options');
     $Ukagaka  = $options->plugin('Ukagaka');
 
-    
     $select   = $database->select()->from('table.options')
                          ->where('name = ?', 'Ukagaka_starttime');
     $lifetime = $database->fetchAll($select);
 
     $ki = array();
 
-    $ki['notice'] = stripslashes($Ukagaka->notice);
-    $ki['born']   = stripslashes($lifetime[0]['value']);
+    $ki['notice']   = stripslashes($Ukagaka->notice);
+    $ki['nickname'] = stripcslashes($Ukagaka->nickname);
+    $ki['born']     = stripslashes($lifetime[0]['value']);
 
     $foods = explode("\r\n", $Ukagaka->foods);
 

@@ -8,3 +8,10 @@
 .ukagaka-menu { display: none; padding: 10px; margin-top: -20px; padding-bottom: 0; }
 .ukagaka-menu:after, .ukagaka-chatlog-output:after { content: ''; clear: both; display: table; }
 .ukagaka-menu a, .ukagaka-food { text-indent: 0; width: 50%; float: left; cursor: pointer; display: block; text-align: center; line-height: 20px; color: #222; }
+
+#ukagaka-talk { width: 240px; height: 30px; position: absolute; bottom: -60px; right: 0; border: 1px solid #DBDBDB; border-radius: 3px; background: #fff;  overflow: hidden; display: none; }
+.ukagaka-talk { padding: 2px!important; padding-left: 5px!important; border: 0!important; height: 30px; width: 180px!important; }
+.ukagaka-talk:active, .ukagaka-talk:focus { outline: none; }
+.ukagaka-submit, .ukagaka-close { background: transparent; border: 0; outline: none; padding: 0; }
+.ukagaka-submit { padding: 0 8px; }
+.ukagaka-close { position: absolute; right: 0; top: 0; font-size: 20px; margin-top: 3px; margin-right: 6px; }

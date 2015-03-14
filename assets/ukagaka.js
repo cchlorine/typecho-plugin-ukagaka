@@ -109,11 +109,22 @@ Ukagaka.prototype = {
                         + '     <a class="ukagaka-menu-lifetime">生存时间</a>'
                         + '     <a class="ukagaka-menu-close">关闭春菜</a>'
                         + '   </div>'
+                        + '   <div id="ukagaka-talk">'
+                        + '     <input  class="ukagaka-talk" type="text">'
+                        + '     <button class="ukagaka-submit">提交</button>'
+                        + '     <button class="ukagaka-close">&times;</button>'
+                        + '   </div>'
                         + '   <div class="ukagaka-btn">'
                         + '     <a class="ukagaka-btn-menu">| Menu |</a>'
                         + '   </div>'
                         + '</div>';
     Lutachu('body').appendChild(this.body);
+
+    this.typing =  new Typing({
+      source: Lutachu('.ukagaka-chatlog-source'),
+      output: Lutachu('.ukagaka-chatlog-output'),
+      delay: 20
+    });
 
     this.data['hate'] = Lutachu.stor('ukagaka_hate') ? Lutachu.stor('ukagaka_hate') : 0;
     if ((Date.parse(new Date()) - this.data['hate']) > 30 * 100000) {
@@ -153,6 +164,7 @@ Ukagaka.prototype = {
       self.data['notice'] = data['notice'];
       self.data['talk'] = [data['question'], data['answer']];
       self.data['food'] = [data['foods'], data['eatsay']];
+      self.data['nick'] = data['nickname'];
 
       if (self.data['hate'] == 0) {
         self.show('notice');
@@ -165,7 +177,7 @@ Ukagaka.prototype = {
 
 
   show: function(t) {
-    Lutachu('.ukagaka-menu').css('display:none');
+    Lutachu('.ukagaka-menu,#ukagaka-talk').css('display:none');
     Lutachu('.ukagaka-btn-menu').css('display:block');
 
     switch (t) {
@@ -209,12 +221,51 @@ Ukagaka.prototype = {
             mins  = time1.getMinutes()  - time2.getMinutes(),
             secs  = time1.getSeconds()  - time2.getSeconds();
 
-        this.type('我已经与主人 主人你好 一起生存了 ' + (year > 0 ? year + '年 ' : '') + (month > 0 ? month + '月 ' : '') + (day > 0 ? day + '天 ' : '') + (hours > 0 ? hours + '小时 ' : '') + (mins > 0 ? mins + '分钟 ' : '') + (secs > 0 ? secs + '秒 ' : '') + '的快乐时光啦～*^_^*');
+        this.type('我已经与' + this.data['nick'] + ' 一起生存了 ' + (year > 0 ? year + '年 ' : '') + (month > 0 ? month + '月 ' : '') + (day > 0 ? day + '天 ' : '') + (hours > 0 ? hours + '小时 ' : '') + (mins > 0 ? mins + '分钟 ' : '') + (secs > 0 ? secs + '秒 ' : '') + '的快乐时光啦～*^_^*');
         console.log(mins)
         break;
 
       case 'talk':
+        var self = this,
+            time;
+
+        Lutachu('#ukagaka-talk').css('display:block');
+        Lutachu('.ukagaka-talk').onkeydown = function(e) {
+          var ev = e || windows.event;
+          var k = ev.keyCode || ev.which;
+
+          if(k == 13) {
+            clearTimeout(time);
+            time = setTimeout(function() {
+              var c = Lutachu('.ukagaka-talk').value;
+              self.talk(c);
+            }, 50);
+          }
+        };
+
+        Lutachu('.ukagaka-submit').onclick = function() {
+          clearTimeout(time);
+          time = setTimeout(function() {
+            var c = Lutachu('.ukagaka-talk').value;
+            self.talk(c);
+          }, 50);
+        };
+
+        Lutachu('.ukagaka-close').onclick = function() {
+          self.show('menu');
+        }
         break;
+    }
+  },
+
+  talk: function(v) {
+    var t = this.data['talk'][0].indexOf(v);
+
+    if (t > -1) {
+      var c = this.data['talk'][1][t];
+      this.type(c);
+    } else {
+      this.type('嗯.....?');
     }
   },
 
@@ -267,20 +318,14 @@ Ukagaka.prototype = {
   },
 
   hide: function() {
-    //
+    console.log('h');
   },
 
   type: function(v) {
     Lutachu('.ukagaka-chatlog-source').innerHTML = v;
     Lutachu('.ukagaka-chatlog-output').innerHTML = '';
 
-    var typing = new Typing({
-      source: Lutachu('.ukagaka-chatlog-source'),
-      output: Lutachu('.ukagaka-chatlog-output'),
-      delay: 20
-    });
-
-    typing.start();
+    this.typing.start();
   },
 
   event: function() {
