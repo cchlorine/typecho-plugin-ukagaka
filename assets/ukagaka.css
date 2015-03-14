@@ -1,3 +1,7 @@
+#ukagaka { position: fixed; left: 80%; top: 60%; width: 160px; height: 160px; z-index: 9999; }
+.ukagaka-character { position: relative; right: 0; top: 0; cursor: move; }
+.ukagaka-chatlog { position: absolute; top: 0px; right: 90px; min-height: 20px; width: 200px; text-align: left; border: 1px solid #e87a73; border-radius: 3px; background: rgba(255, 234, 233, .85); }
+
 #smchuncai {opacity:0.85;width:160px;height:160px;position:fixed;top:400px;left:800px;font-size:12px;}
 * html #smchuncai {position:absolute;}
 #chuncaiface {width:160px;height:160px;background-repeat:no-repeat;position:absolute;top:0px;left:0px;}
