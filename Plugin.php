@@ -1,8 +1,8 @@
 <?php
 /**
  * 一只萌萌的春菜
- * 
- * @package 伪春菜 
+ *
+ * @package 伪春菜
  * @author Kunr
  * @version 1.0.0
  * @link http://kunr.me
@@ -11,7 +11,7 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
 {
   /**
    * 激活插件方法,如果激活失败,直接抛出异常
-   * 
+   *
    * @access public
    * @return void
    * @throws Typecho_Plugin_Exception
@@ -29,10 +29,10 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
         )));
     Helper::addAction('Ukagaka', 'Ukagaka_Action');
   }
-  
+
   /**
    * 禁用插件方法,如果禁用失败,直接抛出异常
-   * 
+   *
    * @static
    * @access public
    * @return void
@@ -40,14 +40,13 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
    */
   public static function deactivate(){
     $db = Typecho_Db::get();
-    $db->delete('table.options')
-->where('name = ?', 'Ukagaka_starttime');
+    $db->query($db->delete('table.options')->where('name = ?', 'Ukagaka_starttime'));
     Helper::removeAction('Ukagaka');
   }
-  
+
   /**
    * 获取插件配置面板
-   * 
+   *
    * @access public
    * @param Typecho_Widget_Helper_Form $form 配置面板
    * @return void
@@ -70,19 +69,19 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
     $foods = new Typecho_Widget_Helper_Form_Element_Textarea('foods', NULL, '金坷垃//吃了金坷垃，一刀能秒一万八～！'."\r\n".'咸梅干//吃咸梅干，变超人！哦耶～～～', _t('零食'), '一行一个零食，零食//答语用\'//\'分割 比如: 零食//答语');
     $form->addInput($foods);
   }
-  
+
   /**
    * 个人用户的配置面板
-   * 
+   *
    * @access public
    * @param Typecho_Widget_Helper_Form $form
    * @return void
    */
   public static function personalConfig(Typecho_Widget_Helper_Form $form){}
-  
+
   /**
    * 插件实现方法
-   * 
+   *
    * @access public
    * @return void
    */
@@ -93,7 +92,7 @@ class Ukagaka_Plugin implements Typecho_Plugin_Interface
 
   /**
    * 插件实现方法
-   * 
+   *
    * @access public
    * @return void
    */
